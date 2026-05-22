@@ -10,6 +10,7 @@ const SandpackPreviewPanel = () => {
   const {
     files,
     runTrigger,
+    dependencies,
   } = useIDEStore();
 
   const sandpackFiles = {};
@@ -32,6 +33,11 @@ const SandpackPreviewPanel = () => {
       key={runTrigger}
       template="react"
       files={sandpackFiles}
+      customSetup={{
+        entry: "/src/index.js",
+
+        dependencies,
+      }}
     >
       <SandpackLayout>
         <SandpackPreview

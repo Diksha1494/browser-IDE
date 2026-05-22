@@ -1,5 +1,10 @@
 import { create } from "zustand";
+
 import API from "../services/api";
+
+// ======================
+// DEFAULT FILES
+// ======================
 
 const defaultFiles = {
   "src/App.js": {
@@ -39,28 +44,62 @@ root.render(<App />);
   },
 };
 
+// ======================
+// LOAD FROM LOCAL STORAGE
+// ======================
+
 const savedFiles = JSON.parse(
   localStorage.getItem("files")
 );
 
+const savedDependencies =
+  JSON.parse(
+    localStorage.getItem(
+      "dependencies"
+    )
+  ) || {
+    react: "latest",
+
+    "react-dom": "latest",
+  };
+
+// ======================
+// STORE
+// ======================
+
 const useIDEStore = create(
   (set, get) => ({
+    // ======================
     // FILES
+    // ======================
+
     files:
       savedFiles || defaultFiles,
 
+    // ======================
+    // DEPENDENCIES
+    // ======================
+
+    dependencies:
+      savedDependencies,
+
+    // ======================
     // ACTIVE FILE
+    // ======================
+
     activeFile: "src/App.js",
 
+    // ======================
     // RUN BUTTON
+    // ======================
+
     runTrigger: 0,
 
-    // PROJECT ID
     currentProjectId: null,
 
-    // =========================
+    // ======================
     // RUN PROJECT
-    // =========================
+    // ======================
 
     setRunTrigger: () =>
       set((state) => ({
@@ -68,18 +107,51 @@ const useIDEStore = create(
           state.runTrigger + 1,
       })),
 
-    // =========================
+    // ======================
     // ACTIVE FILE
-    // =========================
+    // ======================
 
     setActiveFile: (file) =>
       set({
         activeFile: file,
       }),
 
-    // =========================
+    // ======================
+    // INSTALL PACKAGE
+    // ======================
+
+    installPackage: (
+      packageName
+    ) => {
+      const updatedDependencies =
+        {
+          ...get()
+            .dependencies,
+
+          [packageName]:
+            "latest",
+        };
+
+      set({
+        dependencies:
+          updatedDependencies,
+      });
+
+      localStorage.setItem(
+        "dependencies",
+        JSON.stringify(
+          updatedDependencies
+        )
+      );
+
+      alert(
+        `${packageName} installed`
+      );
+    },
+
+    // ======================
     // LOAD PROJECT
-    // =========================
+    // ======================
 
     loadProject: async () => {
       try {
@@ -112,15 +184,14 @@ const useIDEStore = create(
       }
     },
 
-    // =========================
+    // ======================
     // SAVE PROJECT
-    // =========================
+    // ======================
 
     saveProject: async (
       updatedFiles
     ) => {
       try {
-        console.log(updatedFiles);
         await API.post(
           "/save",
           {
@@ -139,51 +210,54 @@ const useIDEStore = create(
       }
     },
 
-     
+    // ======================
+    // UPDATE FILE CONTENT
+    // ======================
+
     updateFileContent: async (
       path,
       content
     ) => {
       const updatedFiles = {
         ...get().files,
+      };
 
-        [path]: {
-          ...get().files[path],
+      updatedFiles[path] = {
+        ...updatedFiles[path],
 
-          file: {
-            contents: content,
-          },
+        file: {
+          contents: content,
         },
       };
 
-      // UPDATE STATE
       set({
         files: updatedFiles,
       });
 
-      // SAVE LOCAL
       localStorage.setItem(
         "files",
         JSON.stringify(updatedFiles)
       );
 
-      // SAVE MONGO
       await get().saveProject(
         updatedFiles
       );
     },
 
+    // ======================
+    // CREATE FILE
+    // ======================
 
     createFile: async (path) => {
       const updatedFiles = {
         ...get().files,
+      };
 
-        [path]: {
-          type: "file",
+      updatedFiles[path] = {
+        type: "file",
 
-          file: {
-            contents: "",
-          },
+        file: {
+          contents: "",
         },
       };
 
@@ -201,16 +275,19 @@ const useIDEStore = create(
       );
     },
 
-    
+    // ======================
+    // CREATE FOLDER
+    // ======================
+
     createFolder: async (
       path
     ) => {
       const updatedFiles = {
         ...get().files,
+      };
 
-        [path]: {
-          type: "folder",
-        },
+      updatedFiles[path] = {
+        type: "folder",
       };
 
       set({
@@ -226,6 +303,10 @@ const useIDEStore = create(
         updatedFiles
       );
     },
+
+    // ======================
+    // DELETE FILE/FOLDER
+    // ======================
 
     deleteItem: async (path) => {
       const updatedFiles = {
@@ -258,11 +339,11 @@ const useIDEStore = create(
         updatedFiles
       );
     },
-dependencies: {
-  react: "latest",
-  "react-dom": "latest",
-},
-    
+
+    // ======================
+    // RENAME FILE/FOLDER
+    // ======================
+
     renameItem: async (
       oldPath,
       newPath
