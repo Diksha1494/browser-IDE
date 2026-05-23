@@ -5,13 +5,7 @@ A MERN-based browser IDE where users can create, edit, run, and preview React pr
 
 ---
 
-# Live Demo
 
-Frontend: https://your-vercel-url.vercel.app
-
-Backend: https://your-render-url.onrender.com
-
----
 
 # Tech Stack
 
@@ -27,9 +21,6 @@ Backend: https://your-render-url.onrender.com
 - Express.js
 - MongoDB Atlas
 
-## Deployment
-- Vercel (Frontend)
-- Render (Backend)
 
 ---
 
@@ -161,15 +152,7 @@ localStorage improves responsiveness and prevents temporary data loss during ref
 
 ---
 
-# Local Setup
 
-## Clone Repository
-
-```bash
-git clone <your-github-repo>
-````
-
----
 
 ## Frontend Setup
 
@@ -195,26 +178,19 @@ npm start
 
 ## Frontend
 
-```env
-VITE_API_URL=your_backend_url/api/projects
-```
+
 
 ## Backend
 
 ```env
-MONGO_URI=your_mongodb_uri
+MONGO_URI= mongodb+srv://dikshaIDE:raidiksha@cluster0.iw55cgk.mongodb.net/idea?retryWrites=true&w=majority
 PORT=5001
 ```
 
 ---
 
-# Deployment
 
-Frontend deployed on Vercel.
 
-Backend deployed on Render.
-
-Database hosted on MongoDB Atlas.
 
 ---
 
